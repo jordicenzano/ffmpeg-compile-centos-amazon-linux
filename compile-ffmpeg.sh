@@ -29,7 +29,8 @@ cd ~/ffmpeg_sources
 curl -O -L https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/nasm-2.14.02.tar.bz2
 tar xjvf nasm-2.14.02.tar.bz2
 cd nasm-2.14.02
-./configure --prefix=/opt/nasm
+./autogen.sh
+./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin"
 make
 sudo make install
 
@@ -104,41 +105,42 @@ sudo make install
 echo "COMPILING SRT"
 cd ~/ffmpeg_sources
 git clone --depth 1 https://github.com/Haivision/srt.git && \
-cd srt && \
-cmake -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED=OFF -DENABLE_STATIC=ON && \
-make && \
-sudo make install
+	cd srt && \
+	cmake -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED=OFF -DENABLE_STATIC=ON && \
+	make && \
+	sudo make install
 
 # Compile ffmpeg
 echo "COMPILING ffmpeg"
 cd ~/ffmpeg_sources
-curl -O -L https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
-tar xjvf ffmpeg-snapshot.tar.bz2 && \
-cd ffmpeg && \
+curl -O -L https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2
+tar xjvf ffmpeg-snapshot.tar.bz2
+cd ffmpeg
 PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure \
-  --prefix="$HOME/ffmpeg_build" \
-  --pkg-config-flags="--static" \
-  --extra-cflags="-I$HOME/ffmpeg_build/include" \
-  --extra-ldflags="-L$HOME/ffmpeg_build/lib" \
-  --extra-libs=-lpthread \
-  --extra-libs=-lm \
-  --bindir="$HOME/bin" \
-  --enable-gpl \
-  --enable-libass \
-  --enable-libfdk-aac \
-  --enable-libfreetype \
-  --enable-libmp3lame \
-  --enable-libopus \
-  --enable-libtheora \
-  --enable-libvorbis \
-  --enable-libvpx \
-  --enable-libx264 \
-  --enable-nonfree \
-  --enable-openssl \
-  --enable-libsrt && \
+	--prefix="$HOME/ffmpeg_build" \
+	--pkg-config-flags="--static" \
+	--extra-cflags="-I$HOME/ffmpeg_build/include" \
+	--extra-ldflags="-L$HOME/ffmpeg_build/lib" \
+	--extra-libs=-lpthread \
+	--extra-libs=-lm \
+	--bindir="$HOME/bin" \
+	--enable-gpl \
+	--enable-libass \
+	--enable-libfdk-aac \
+	--enable-libfreetype \
+	--enable-libmp3lame \
+	--enable-libopus \
+	--enable-libtheora \
+	--enable-libvorbis \
+	--enable-libvpx \
+	--enable-libx264 \
+	--enable-nonfree \
+	--enable-openssl \
+	--enable-libsrt && \
 PATH="$HOME/bin:$PATH" make && \
 sudo make install && \
 hash -r
 
 # Clean up
 yum clean
+
