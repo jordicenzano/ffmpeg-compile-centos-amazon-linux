@@ -1,3 +1,5 @@
+#!/bin/bash    
+
 # Compile ffmpeg in centOS based Linux
 # by Jordi Cenzano
 
@@ -5,27 +7,16 @@
 set -e
 
 # Update
-yum update update -y
+sudo yum update update -y
 
 # Upgrade
-yum upgrade -y
+sudo yum upgrade -y
 
-# Install curl
-yum install curl -y
+# Prepare for ffmpeg
+sudo yum -y install curl unzip wget git autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make mercurial pkgconfig zlib-devel
 
-#I nstall unzip
-yum install unzip -y
-
-# Install wget
-yum install wget -y
-
-# Install wget
-yum install git -y
-
-# Prepare docker for ffmpeg
-yum -y install autoconf automake build-essential libass-dev libfreetype6-dev \
-  libsdl2-dev libtheora-dev libtool libva-dev libvdpau-dev libvorbis-dev libxcb1-dev libxcb-shm0-dev \
-  libxcb-xfixes0-dev pkg-config texinfo wget zlib1g-dev cmake libssl-dev
+# Install network resources
+sudo yum -y install iproute net-tools
 
 # Compile ffmpeg from sources ----------------
 
@@ -33,107 +24,121 @@ yum -y install autoconf automake build-essential libass-dev libfreetype6-dev \
 mkdir -p ~/ffmpeg_sources
 
 # Compile NASM
-cd ~/ffmpeg_sources && \
-  wget https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/nasm-2.14.02.tar.bz2 && \
-  tar xjvf nasm-2.14.02.tar.bz2 && \
-  cd nasm-2.14.02 && \
-  ./autogen.sh && \
-  PATH="$HOME/bin:$PATH" ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" && \
-  make && \
-  make install
+echo "COMPILING NASM"
+cd ~/ffmpeg_sources
+curl -O -L https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/nasm-2.14.02.tar.bz2
+tar xjvf nasm-2.14.02.tar.bz2
+cd nasm-2.14.02
+./configure --prefix=/opt/nasm
+make
+sudo make install
 
 # Compile YASM
-cd ~/ffmpeg_sources && \
-  wget -O yasm-1.3.0.tar.gz https://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz && \
-  tar xzvf yasm-1.3.0.tar.gz && \
-  cd yasm-1.3.0 && \
-  ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" && \
-  make && \
-  make install
+echo "COMPILING YASM"
+cd ~/ffmpeg_sources
+curl -O -L https://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz
+tar xzvf yasm-1.3.0.tar.gz
+cd yasm-1.3.0
+./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin"
+make
+sudo make install
 
 # Compile x264
-cd ~/ffmpeg_sources && \
-  git clone --depth 1 https://code.videolan.org/videolan/x264.git && \
-  cd x264 && \
-  PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" --enable-static --enable-pic && \
-  PATH="$HOME/bin:$PATH" make && \
-  make install
+echo "COMPILING H264"
+cd ~/ffmpeg_sources
+git clone --depth 1 https://code.videolan.org/videolan/x264.git
+cd x264
+PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" --enable-static
+make
+sudo make install
+
+# Compile x265
+echo "COMPILING H265"
+cd ~/ffmpeg_sources
+hg clone https://bitbucket.org/multicoreware/x265
+cd ~/ffmpeg_sources/x265/build/linux
+cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED:bool=off ../../source
+make
+sudo make install
 
 # Compile fdk-aac
-cd ~/ffmpeg_sources && \
-  wget -O fdk-aac.tar.gz https://github.com/mstorsjo/fdk-aac/tarball/master && \
-  tar xzvf fdk-aac.tar.gz && \
-  cd mstorsjo-fdk-aac* && \
-  autoreconf -fiv && \
-  ./configure --prefix="$HOME/ffmpeg_build" --disable-shared && \
-  make && \
-  make install
+echo "COMPILING fdk-aac"
+cd ~/ffmpeg_sources
+git clone --depth 1 https://github.com/mstorsjo/fdk-aac
+cd fdk-aac
+autoreconf -fiv
+./configure --prefix="$HOME/ffmpeg_build" --disable-shared
+make
+sudo make install
 
 # Compile libmp3lame
-cd ~/ffmpeg_sources && \
-  wget http://downloads.sourceforge.net/project/lame/lame/3.100/lame-3.100.tar.gz && \
-  tar xzvf lame-3.100.tar.gz && \
-  cd lame-3.100 && \
-  ./configure --prefix="$HOME/ffmpeg_build" --enable-nasm --disable-shared && \
-  make && \
-  make install
+echo "COMPILING libmp3lame"
+cd ~/ffmpeg_sources
+curl -O -L https://downloads.sourceforge.net/project/lame/lame/3.100/lame-3.100.tar.gz
+tar xzvf lame-3.100.tar.gz
+cd lame-3.100
+./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" --disable-shared --enable-nasm
+make
+sudo make install
 
 # Compile libopus
-cd ~/ffmpeg_sources && \
-  wget https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz && \
-  tar xzvf opus-1.3.1.tar.gzz && \
-  cd opus-1.3.1 && \
-  ./configure --prefix="$HOME/ffmpeg_build" --disable-shared && \
-  make && \
-  make install
+echo "COMPILING libopus"
+cd ~/ffmpeg_sources
+curl -O -L https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz
+tar xzvf opus-1.3.1.tar.gz
+cd opus-1.3.1
+./configure --prefix="$HOME/ffmpeg_build" --disable-shared
+make
+sudo make install
 
 # Compile libvpx
-yum install git -y && \
-  cd ~/ffmpeg_sources && \
-  git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git && \
-  cd libvpx && \
-  PATH="$HOME/bin:$PATH" ./configure --prefix="$HOME/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth && \
-  PATH="$HOME/bin:$PATH" make && \
-  make install
+echo "COMPILING libvpx"
+cd ~/ffmpeg_sources
+git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git
+cd libvpx
+./configure --prefix="$HOME/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm
+make
+sudo make install
 
 # Compile SRT
-cd ~/ffmpeg_sources && \
-  git clone --depth 1 https://github.com/Haivision/srt.git && \
-  cd srt && \
-  cmake -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED=OFF -DENABLE_STATIC=ON && \
-  make && \
-  make install
+echo "COMPILING SRT"
+cd ~/ffmpeg_sources
+git clone --depth 1 https://github.com/Haivision/srt.git && \
+cd srt && \
+cmake -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED=OFF -DENABLE_STATIC=ON && \
+make && \
+sudo make install
 
 # Compile ffmpeg
-cd ~/ffmpeg_sources && \
-  wget http://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
-  tar xjvf ffmpeg-snapshot.tar.bz2 && \
-  cd ffmpeg && \
-  PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure \
-    --prefix="$HOME/ffmpeg_build" \
-    --pkg-config-flags="--static" \
-    --extra-cflags="-I$HOME/ffmpeg_build/include" \
-    --extra-ldflags="-L$HOME/ffmpeg_build/lib" \
-    --bindir="$HOME/bin" \
-    --enable-gpl \
-    --enable-libass \
-    --enable-libfdk-aac \
-    --enable-libfreetype \
-    --enable-libmp3lame \
-    --enable-libopus \
-    --enable-libtheora \
-    --enable-libvorbis \
-    --enable-libvpx \
-    --enable-libx264 \
-    --enable-nonfree \
-    --enable-openssl \
-    --enable-libsrt && \
-  PATH="$HOME/bin:$PATH" make && \
-  make install && \
-  hash -r
-
-# Install network resources
-yum -y install iproute iputils-ping net-tools
+echo "COMPILING ffmpeg"
+cd ~/ffmpeg_sources
+curl -O -L https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2 && \
+tar xjvf ffmpeg-snapshot.tar.bz2 && \
+cd ffmpeg && \
+PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure \
+  --prefix="$HOME/ffmpeg_build" \
+  --pkg-config-flags="--static" \
+  --extra-cflags="-I$HOME/ffmpeg_build/include" \
+  --extra-ldflags="-L$HOME/ffmpeg_build/lib" \
+  --extra-libs=-lpthread \
+  --extra-libs=-lm \
+  --bindir="$HOME/bin" \
+  --enable-gpl \
+  --enable-libass \
+  --enable-libfdk-aac \
+  --enable-libfreetype \
+  --enable-libmp3lame \
+  --enable-libopus \
+  --enable-libtheora \
+  --enable-libvorbis \
+  --enable-libvpx \
+  --enable-libx264 \
+  --enable-nonfree \
+  --enable-openssl \
+  --enable-libsrt && \
+PATH="$HOME/bin:$PATH" make && \
+sudo make install && \
+hash -r
 
 # Clean up
 yum clean
