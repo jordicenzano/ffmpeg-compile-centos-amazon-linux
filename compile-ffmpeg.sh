@@ -13,7 +13,7 @@ sudo yum update update -y
 sudo yum upgrade -y
 
 # Prepare for ffmpeg
-sudo yum -y install curl unzip wget git autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make mercurial pkgconfig zlib-devel
+sudo yum -y install tcl curl unzip wget git autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make mercurial pkgconfig zlib-devel openssl-devel
 
 # Install network resources
 sudo yum -y install iproute net-tools
@@ -101,14 +101,32 @@ cd libvpx
 make
 sudo make install
 
+# Compile LIBASS & dependencies
+echo "COMPILING LIBASS"
+cd ~/ffmpeg_sources
+wget https://github.com/fribidi/fribidi/releases/download/v1.0.5/fribidi-1.0.5.tar.bz2
+tar -xvf fribidi-1.0.5.tar.bz2
+cd fribidi-1.0.5
+./configure --prefix="$HOME/ffmpeg_build"
+make 
+sudo make install
+
+cd ~/ffmpeg_sources
+git clone https://github.com/libass/libass.git
+cd libass
+./autogen.sh
+PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure --prefix="$HOME/ffmpeg_build" --disable-require-system-font-provider
+make
+sudo make install
+
 # Compile SRT
 echo "COMPILING SRT"
 cd ~/ffmpeg_sources
-git clone --depth 1 https://github.com/Haivision/srt.git && \
-	cd srt && \
-	cmake -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED=OFF -DENABLE_STATIC=ON && \
-	make && \
-	sudo make install
+git clone --depth 1 https://github.com/Haivision/srt.git
+cd srt
+PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_BINDIR="$HOME/ffmpeg_build/bin" -DCMAKE_INSTALL_INCLUDEDIR="$HOME/ffmpeg_build/include" -DCMAKE_INSTALL_LIBDIR="$HOME/ffmpeg_build/lib" -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED:bool=off
+make
+sudo make install
 
 # Compile ffmpeg
 echo "COMPILING ffmpeg"
@@ -130,17 +148,12 @@ PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./conf
 	--enable-libfreetype \
 	--enable-libmp3lame \
 	--enable-libopus \
-	--enable-libtheora \
-	--enable-libvorbis \
 	--enable-libvpx \
 	--enable-libx264 \
+	--enable-libx265 \
 	--enable-nonfree \
 	--enable-openssl \
-	--enable-libsrt && \
-PATH="$HOME/bin:$PATH" make && \
-sudo make install && \
+	--enable-libsrt
+PATH="$HOME/bin:$PATH" make
+sudo make install
 hash -r
-
-# Clean up
-yum clean
-
