@@ -101,24 +101,6 @@ cd libvpx
 make
 sudo make install
 
-# Compile LIBASS & dependencies
-echo "COMPILING LIBASS"
-cd ~/ffmpeg_sources
-wget https://github.com/fribidi/fribidi/releases/download/v1.0.5/fribidi-1.0.5.tar.bz2
-tar -xvf fribidi-1.0.5.tar.bz2
-cd fribidi-1.0.5
-./configure --prefix="$HOME/ffmpeg_build"
-make 
-sudo make install
-
-cd ~/ffmpeg_sources
-git clone https://github.com/libass/libass.git
-cd libass
-./autogen.sh
-PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure --prefix="$HOME/ffmpeg_build" --disable-require-system-font-provider
-make
-sudo make install
-
 # Compile SRT
 echo "COMPILING SRT"
 cd ~/ffmpeg_sources
@@ -143,7 +125,6 @@ PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./conf
 	--extra-libs=-lm \
 	--bindir="$HOME/bin" \
 	--enable-gpl \
-	--enable-libass \
 	--enable-libfdk-aac \
 	--enable-libfreetype \
 	--enable-libmp3lame \
