@@ -34,9 +34,9 @@ mkdir -p ~/ffmpeg_sources
 
 # Compile NASM
 cd ~/ffmpeg_sources && \
-  wget https://www.nasm.us/pub/nasm/releasebuilds/2.13.03/nasm-2.13.03.tar.bz2 && \
-  tar xjvf nasm-2.13.03.tar.bz2 && \
-  cd nasm-2.13.03 && \
+  wget https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/nasm-2.14.02.tar.bz2 && \
+  tar xjvf nasm-2.14.02.tar.bz2 && \
+  cd nasm-2.14.02 && \
   ./autogen.sh && \
   PATH="$HOME/bin:$PATH" ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" && \
   make && \
@@ -71,18 +71,18 @@ cd ~/ffmpeg_sources && \
 
 # Compile libmp3lame
 cd ~/ffmpeg_sources && \
-  wget http://downloads.sourceforge.net/project/lame/lame/3.99/lame-3.99.5.tar.gz && \
-  tar xzvf lame-3.99.5.tar.gz && \
-  cd lame-3.99.5 && \
+  wget http://downloads.sourceforge.net/project/lame/lame/3.100/lame-3.100.tar.gz && \
+  tar xzvf lame-3.100.tar.gz && \
+  cd lame-3.100 && \
   ./configure --prefix="$HOME/ffmpeg_build" --enable-nasm --disable-shared && \
   make && \
   make install
 
 # Compile libopus
 cd ~/ffmpeg_sources && \
-  wget https://archive.mozilla.org/pub/opus/opus-1.1.5.tar.gz && \
-  tar xzvf opus-1.1.5.tar.gz && \
-  cd opus-1.1.5 && \
+  wget https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz && \
+  tar xzvf opus-1.3.1.tar.gzz && \
+  cd opus-1.3.1 && \
   ./configure --prefix="$HOME/ffmpeg_build" --disable-shared && \
   make && \
   make install
