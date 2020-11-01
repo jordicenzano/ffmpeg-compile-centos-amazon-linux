@@ -13,7 +13,7 @@ sudo yum update update -y
 sudo yum upgrade -y
 
 # Prepare for ffmpeg
-sudo yum -y install tcl curl unzip wget git autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make mercurial pkgconfig zlib-devel openssl-devel
+sudo yum -y install tcl curl unzip wget git autoconf automake bzip2 bzip2-devel cmake freetype-devel gcc gcc-c++ git libtool make mercurial pkgconfig zlib-devel openssl-devel nasm
 
 # Install network resources
 sudo yum -y install iproute net-tools
@@ -22,17 +22,6 @@ sudo yum -y install iproute net-tools
 
 # Create dir
 mkdir -p ~/ffmpeg_sources
-
-# Compile NASM
-echo "COMPILING NASM"
-cd ~/ffmpeg_sources
-curl -O -L https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/nasm-2.14.02.tar.bz2
-tar xjvf nasm-2.14.02.tar.bz2
-cd nasm-2.14.02
-./autogen.sh
-./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin"
-make
-sudo make install
 
 # Compile YASM
 echo "COMPILING YASM"
@@ -54,13 +43,13 @@ make
 sudo make install
 
 # Compile x265
-echo "COMPILING H265"
-cd ~/ffmpeg_sources
-hg clone https://bitbucket.org/multicoreware/x265
-cd ~/ffmpeg_sources/x265/build/linux
-cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED:bool=off ../../source
-make
-sudo make install
+# echo "COMPILING H265"
+# cd ~/ffmpeg_sources
+# hg clone https://bitbucket.org/multicoreware/x265
+# cd ~/ffmpeg_sources/x265/build/linux
+# cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED:bool=off ../../source
+# make
+# sudo make install
 
 # Compile fdk-aac
 echo "COMPILING fdk-aac"
@@ -131,7 +120,7 @@ PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./conf
 	--enable-libopus \
 	--enable-libvpx \
 	--enable-libx264 \
-	--enable-libx265 \
+#	--enable-libx265 \
 	--enable-nonfree \
 	--enable-openssl \
 	--enable-libsrt
