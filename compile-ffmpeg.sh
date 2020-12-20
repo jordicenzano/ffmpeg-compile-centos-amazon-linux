@@ -134,14 +134,13 @@ PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./conf
 	--extra-libs=-lm \
 	--bindir="$HOME/bin" \
 	--enable-gpl \
+	--enable-nonfree \
 	--enable-libfdk-aac \
 	--enable-libfreetype \
 	--enable-libmp3lame \
 	--enable-libopus \
 	--enable-libvpx \
 	--enable-libx264 \
-#	--enable-libx265 \
-	--enable-nonfree \
 	--enable-openssl \
 	--enable-libsrt
 PATH="$HOME/bin:$PATH" make
