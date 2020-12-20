@@ -27,7 +27,8 @@ mkdir -p ~/ffmpeg_sources
 echo "COMPILING NASM"	
 cd ~/ffmpeg_sources	
 curl -O -L https://www.nasm.us/pub/nasm/releasebuilds/2.14.02/nasm-2.14.02.tar.bz2	
-tar xjvf nasm-2.14.02.tar.bz2	
+rm -r -f nasm-2.14.02
+tar xjvf nasm-2.14.02.tar.bz2
 cd nasm-2.14.02	
 ./autogen.sh	
 ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin"	
@@ -38,6 +39,7 @@ sudo make install
 echo "COMPILING YASM"
 cd ~/ffmpeg_sources
 curl -O -L https://www.tortall.net/projects/yasm/releases/yasm-1.3.0.tar.gz
+rm -r -f yasm-1.3.0
 tar xzvf yasm-1.3.0.tar.gz
 cd yasm-1.3.0
 ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin"
@@ -47,6 +49,7 @@ sudo make install
 # Compile x264
 echo "COMPILING H264"
 cd ~/ffmpeg_sources
+rm -r -f x264
 git clone --depth 1 https://code.videolan.org/videolan/x264.git
 cd x264
 PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" --enable-static
@@ -65,6 +68,7 @@ sudo make install
 # Compile fdk-aac
 echo "COMPILING fdk-aac"
 cd ~/ffmpeg_sources
+rm -r -f fdk-aac
 git clone --depth 1 https://github.com/mstorsjo/fdk-aac
 cd fdk-aac
 autoreconf -fiv
@@ -76,6 +80,7 @@ sudo make install
 echo "COMPILING libmp3lame"
 cd ~/ffmpeg_sources
 curl -O -L https://downloads.sourceforge.net/project/lame/lame/3.100/lame-3.100.tar.gz
+rm -r -f lame-3.100
 tar xzvf lame-3.100.tar.gz
 cd lame-3.100
 ./configure --prefix="$HOME/ffmpeg_build" --bindir="$HOME/bin" --disable-shared --enable-nasm
@@ -86,6 +91,7 @@ sudo make install
 echo "COMPILING libopus"
 cd ~/ffmpeg_sources
 curl -O -L https://archive.mozilla.org/pub/opus/opus-1.3.1.tar.gz
+rm -r -f opus-1.3.1
 tar xzvf opus-1.3.1.tar.gz
 cd opus-1.3.1
 ./configure --prefix="$HOME/ffmpeg_build" --disable-shared
@@ -95,6 +101,7 @@ sudo make install
 # Compile libvpx
 echo "COMPILING libvpx"
 cd ~/ffmpeg_sources
+rm -r -f libvpx
 git clone --depth 1 https://chromium.googlesource.com/webm/libvpx.git
 cd libvpx
 ./configure --prefix="$HOME/ffmpeg_build" --disable-examples --disable-unit-tests --enable-vp9-highbitdepth --as=yasm
@@ -104,6 +111,7 @@ sudo make install
 # Compile SRT
 echo "COMPILING SRT"
 cd ~/ffmpeg_sources
+rm -r -f srt
 git clone --depth 1 https://github.com/Haivision/srt.git
 cd srt
 PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_BINDIR="$HOME/ffmpeg_build/bin" -DCMAKE_INSTALL_INCLUDEDIR="$HOME/ffmpeg_build/include" -DCMAKE_INSTALL_LIBDIR="$HOME/ffmpeg_build/lib" -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED:bool=off
@@ -114,6 +122,7 @@ sudo make install
 echo "COMPILING ffmpeg"
 cd ~/ffmpeg_sources
 curl -O -L https://ffmpeg.org/releases/ffmpeg-snapshot.tar.bz2
+rm -r -f ffmpeg
 tar xjvf ffmpeg-snapshot.tar.bz2
 cd ffmpeg
 PATH="$HOME/bin:$PATH" PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" ./configure \
