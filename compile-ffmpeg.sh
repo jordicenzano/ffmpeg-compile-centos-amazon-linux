@@ -112,7 +112,8 @@ sudo make install
 echo "COMPILING SRT"
 cd ~/ffmpeg_sources
 rm -r -f srt
-git clone --depth 1 https://github.com/Haivision/srt.git
+# Fixed to version v1.4.0 because master (@2021/09/01) failed to compile on EC2 machines
+git clone --depth 1 --branch v1.4.0 https://github.com/Haivision/srt.git
 cd srt
 PKG_CONFIG_PATH="$HOME/ffmpeg_build/lib/pkgconfig" cmake -G "Unix Makefiles" -DCMAKE_INSTALL_BINDIR="$HOME/ffmpeg_build/bin" -DCMAKE_INSTALL_INCLUDEDIR="$HOME/ffmpeg_build/include" -DCMAKE_INSTALL_LIBDIR="$HOME/ffmpeg_build/lib" -DCMAKE_INSTALL_PREFIX="$HOME/ffmpeg_build" -DENABLE_SHARED:bool=off
 make
